@@ -12,16 +12,16 @@
 (defn app-root []
   [ios-ui/navigator
    {:initial-route
-    {:title                 "Messages"
+    {:title              "Messages"
      ;TODO initial component to be message list - WIP
      ;:commponent must reactify a component function that takes a map of navigator
      ;TODO on right press callback to be a re-frame
      ; dispatch?
-     :component             (m-scenes/message-list-comp)
-     :right-button-title    "New"
+     :component          (m-scenes/message-list-comp)
+     :right-button-title "New"
      #_:on-right-button-press #_(ios-ui/show-dialog
-                                 {:text     "New Message"
-                                  :callback (fn [_] nil)})}
+                                  {:text     "New Message"
+                                   :callback (fn [_] nil)})}
     :style
     {:position "absolute"
      :top      0
@@ -34,12 +34,16 @@
 ;TODO possible handling of app state
 (defn init []
   (dispatch-sync [:initialize-db])
-  (.registerComponent ui/app-registry "SmsClient" #(r/reactify-component app-root)
+  #_(dispatch [:load-messages])
+  (.registerComponent ui/app-registry "SmsClient" #(r/reactify-component app-root)))
 
-                      #_(re-natal use-ios-device real
-                                  re-natal use-component react-native-material-design
-                                  re-natal use-component react-native-dialogs
-                                  re-natal use-component react-native-button
-                                  re-natal use-figwheel
-                                  react-native run-ios
-                                  lein figwheel ios)))
+(comment
+  re-natal use-ios-device real
+  re-natal use-component react-native-material-design
+  re-natal use-component react-native-dialogs
+  re-natal use-component react-native-button
+  re-natal use-component react-native-keyboard-spacer
+  re-natal use-figwheel
+  react-native run-ios
+  lein figwheel ios)
+

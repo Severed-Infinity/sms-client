@@ -3,8 +3,11 @@
 
 (set! js/window.React (js/require "react-native"))
 (set! js/IOSButton (js/require "react-native-button"))
+(set! js/KeyboardSpacer (js/require
+                          "react-native-keyboard-spacer"))
 
 (def navigator (r/adapt-react-class (.-NavigatorIOS js/React)))
+(def keyboard-spacer (r/adapt-react-class js/KeyboardSpacer))
 
 (def tab-bar
   (r/adapt-react-class (.-TabBarIOS js/React)))

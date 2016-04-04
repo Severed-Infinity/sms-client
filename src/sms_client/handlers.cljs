@@ -37,6 +37,7 @@
 
 ;-- Networking --------------------------------------------------------------
 
+;TODO replace with re-frame handlers
 (def base-url "http://sfinity-server.herokuapp.com")
 ;172.23.23.150
 (def local-host "http://localhost:3033")
@@ -54,13 +55,27 @@
         (swap! messages assoc (get next-message "src")
                (conj [] (dissoc next-message "dest")))))))
 
-(defn get-messages [contact messages]
-  (go (let [response           (<! (http/get (str local-host "/user/" contact "/messages")))
+#_(defn get-messages [contact messages]
+    (go (let [response           (<! (http/get (str local-host "/user/" contact "/messages")))]
             new-messages       (transit/read reader (:body response))
-            formatted-messages (vec (map #(transit/read reader %) new-messages))]
+            formatted-messages (vec (map #(transit/read reader %) new-messages)))
         (.log js/console (str "response body " formatted-messages))
         (if (not (empty? formatted-messages))
-          (sort-messages messages formatted-messages)))))
+          (sort-messages messages formatted-messages))))
+
+(register-handler
+  :load-messages
+  (fn [db [_ number]]
+    (with-out-str number)
+    #_(go
+       (let [response (<! (http/get (str local-host
+                                         "/user/" number
+                                         "/messages")))
+             new-messages (transit/read reader (:body response))
+             formatted-messages (vec (map #(transit/read reader %) new-messages))]
+         (if (not (empty? formatted-messages))
+           (sort-messages db formatted-messages))))))
+
 
 (defn send-message [src dest message]
   (go (go (<! (http/post (str local-host "/user/" src "/message")

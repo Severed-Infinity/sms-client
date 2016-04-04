@@ -10,22 +10,34 @@
 (defn message-chat [{navigator :navigator}]
   #_(.log js/console navigator)
   #_(.log js/console (handler/send-message "0862561423" "0851263571" "hello from my app"))
-  [ui/view {:style {:height 1 :flex 1}}
-   [ui/view {:style {:flex 0 :margin-top 64}}
-    [ui/text {:style {:font-weight "100" :color "#777"}}
-     "hello from chat"]]
-   [ui/text-input {:placeholder     "Text Input"
-                   :style           {:font-size    14
-                                     :color        "#777"
-                                     :border-color "#999"
-                                     :border-style "solid"
-                                     :border-width 1
-                                     :height       35
-                                     :padding      5}
-                   :auto-capitalize :sentences
-                   :keyboard-type   :default
-                   :multiline       true}]
-   [ios-ui/button {:on-press #()} "send"]])
+  (let [route      (js->clj (get (r/props
+                                   (r/current-component))
+                                 :route)
+                            :keywordize-keys true)
+        pass-props (:pass-props route)
+        chat       (second (:chat pass-props))]
+    [ui/view {:style {:height 1 :flex 1}}
+     [ui/view {:style {:flex 1 :margin-top 64}}
+      [ui/text {:style {:font-weight "100" :color "#777"}}
+       (str chat)]]
+     [ui/view {:style {:flex-direction  :column
+                       :flex-wrap       :nowrap
+                       :justify-content :flex-start}}
+      [ui/text-input {:placeholder     "Text Input"
+                      :style           {:font-size    14
+                                        :color        "#777"
+                                        :border-color "#999"
+                                        :border-style "solid"
+                                        :border-width 1
+                                        :height       35
+                                        :padding      5}
+                      :auto-capitalize :sentences
+                      :keyboard-type   :default
+                      :multiline       true}]
+      ;TODO dispatch send to server
+      [ios-ui/button {:on-press #()
+                      :style    {}} "send"]
+      [ios-ui/keyboard-spacer]]]))
 
 (defn message-chat-comp [] (r/reactify-component message-chat))
 
@@ -35,19 +47,22 @@
     #_(.push navigator (clj->js {:component (message-chat-comp) :title "chat"})))
 
 (defn message-list-item [{navigator :navigator
-                          contact   :contact}]
+                          chat      :chat}]
   ;TODO most recent message lookup
-  ;TODO touchable on-press to pass contact to message-chat-scene with lookup through nav props?
+  ;TODO touchable on-press to pass chat to message-chat-scene with lookup through nav props?
+  ;TODO replace on-press function with re-frame dispatch
   #_(.log js/console navigator)
-  (let [contact-num    (key contact)
-        recent-message (get (first (val contact)) "message")]
+  (let [contact-num    (key chat)
+        recent-message (get (first (val chat)) :message)]
     [ui/touchable-highlight
      {:active-opacity 0.9
       :underlay-color "#ccc"
       :on-press       #(.push
                         navigator
                         (clj->js
-                          {:component (message-chat-comp) :title contact-num}))}
+                          {:component  (message-chat-comp)
+                           :title      contact-num
+                           :pass-props {:chat chat}}))}
      [ui/view {:style {:height              55
                        :flex-direction      "column"
                        :padding             5 :padding-left 15
@@ -56,10 +71,15 @@
                        :border-color        "#eee"
                        :border-style        "solid"
                        :margin-left         30}}
-      [ui/text {:style           {:font-weight "600" :font-size 14}
-                :number-of-lines 1} contact]
-      [ui/text {:style           {:font-weight "100" :font-size 11 :color "#777"}
-                :number-of-lines 2} recent-message]]]))
+      [ui/text {:style           {:font-weight "600"
+                                  :font-size   20}
+                :number-of-lines 1}
+       contact-num]
+      [ui/text {:style           {:font-weight "100"
+                                  :font-size   14
+                                  :color       "#777"}
+                :number-of-lines 2}
+       recent-message]]]))
 
 #_(defn message-list-item-comp [] (r/reactify-component
                                     message-list-item))
@@ -71,27 +91,24 @@
     (fn []
       [ui/view {:style {:height 1 :flex 1}}
        ;:margin-top 64
+       ;TODO refresh-control to use dispatch call
        [ui/scroll-view {:style {:flex 1}
                         #_(:refresh-control
-                            (r/as-element
-                              (let)
+                            (r/as-element)
+                            (let
                               [refresher-state (r/atom false)]
                               [ui/refresh-control
                                {:refreashing @refresher-state
                                 :on-refresh  (r/set-state
                                                refresher-state false)}]))}
-        #_(map
-            (fn [message]
-              ^{:key (str "contact-" (key message))}
-              [message-list-item {:contact   message
-                                  :navigator navigator}])
-            @messages)
-        (map (fn [message]
-               ^{:key (key message)}
-                [ui/text (str (val message))])
-             @messages)
+        (for [message @messages]
+          ^{:key (key message)}
+          [message-list-item
+           {:navigator navigator
+            :chat      message}])
         #_(.log js/console "logging messages: \n" @messages)
-        [ui/text (:message (first (get @messages "0871234567")))]]])))
+        #_[ui/text (:message (first (get @messages
+                                         "0871234567")))]]])))
 
 
 (defn message-list-comp [] (r/reactify-component message-list))

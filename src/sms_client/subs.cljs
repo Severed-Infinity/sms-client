@@ -13,3 +13,9 @@
   (fn [db _]
     (reaction
       (get @db :messages))))
+
+(register-sub
+  :chat
+  (fn [db chat]
+    (reaction
+      (get-in @db [:messages chat]))))
