@@ -122,10 +122,17 @@
     "react-native-button",
     "react-native-material-design",
     "react-native-dialogs",
+    "react-native-button",
+    "react-native-material-design",
+    "react-native-dialogs",
+    "react-native-material-design",
+    "react-native-dialogs",
     "react-native-button"
   ],
   "imageDirs": [
     "images"
   ],
-  "device": "CDB0669D-A906-428A-90FB-B69EAB80E3E6"
+  "device": "CDB0669D-A906-428A-90FB-B69EAB80E3E6",
+  "interface": "reagent",
+  "iosHost": "172.23.23.150"
 }

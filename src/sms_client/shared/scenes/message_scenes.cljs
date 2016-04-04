@@ -2,10 +2,8 @@
   (:require [sms-client.shared.ui :as ui]
             [sms-client.ios.ui :as ios-ui]
             [sms-client.handlers :as handler]
-            [reagent.core :as r]))
-
-;TODO move messages to a more appropiate place
-(def messages (r/atom {}))
+            [reagent.core :as r]
+            [re-frame.core :refer [subscribe]]))
 
 ;TODO if new chat is made from main add contact to list along with chat history
 ;TODO add a send/submit type button for text input
@@ -43,25 +41,25 @@
   #_(.log js/console navigator)
   (let [contact-num    (key contact)
         recent-message (get (first (val contact)) "message")]
-      [ui/touchable-highlight
-       {:active-opacity 0.9
-         :underlay-color "#ccc"
-         :on-press       #(.push
-                           navigator
-                           (clj->js
-                             {:component (message-chat-comp) :title contact-num}))}
-       [ui/view {:style {:height              55
-                         :flex-direction      "column"
-                         :padding             5 :padding-left 15
-                         :padding-right       15
-                         :border-bottom-width 1
-                         :border-color        "#eee"
-                         :border-style        "solid"
-                         :margin-left         30}}
-        [ui/text {:style           {:font-weight "600" :font-size 14}
-                  :number-of-lines 1} contact]
-        [ui/text {:style           {:font-weight "100" :font-size 11 :color "#777"}
-                  :number-of-lines 2} recent-message]]]))
+    [ui/touchable-highlight
+     {:active-opacity 0.9
+      :underlay-color "#ccc"
+      :on-press       #(.push
+                        navigator
+                        (clj->js
+                          {:component (message-chat-comp) :title contact-num}))}
+     [ui/view {:style {:height              55
+                       :flex-direction      "column"
+                       :padding             5 :padding-left 15
+                       :padding-right       15
+                       :border-bottom-width 1
+                       :border-color        "#eee"
+                       :border-style        "solid"
+                       :margin-left         30}}
+      [ui/text {:style           {:font-weight "600" :font-size 14}
+                :number-of-lines 1} contact]
+      [ui/text {:style           {:font-weight "100" :font-size 11 :color "#777"}
+                :number-of-lines 2} recent-message]]]))
 
 #_(defn message-list-item-comp [] (r/reactify-component
                                     message-list-item))
@@ -69,26 +67,32 @@
 (defn message-list [{navigator :navigator}]
   ;TODO correctly format and nest messages a map with number as identifier
   #_(.log js/console navigator)
-  [ui/view {:style {:height 1 :flex 1}}
-    ;:margin-top 64
-   [ui/scroll-view {:style {:flex 1}
-                    #_(:refresh-control
-                        (r/as-element
-                          (let)
-                          [refresher-state (r/atom false)]
-                          [ui/refresh-control
-                           {:refreashing @refresher-state
-                            :on-refresh  (r/set-state
-                                           refresher-state false)}]))}
-    #_(map
-        (fn [message]
-          ^{:key (str "contact-" (key message))}
-          [message-list-item {:contact   message
-                              :navigator navigator}])
-        #_[ui/text (str message)]
-        @messages)
-     [ui/text "hello \nhello \nhello \nhello \nhello \nhello
-               \nhello \nhello"]]])
+  (let [messages (subscribe [:get-messages])]
+    (fn []
+      [ui/view {:style {:height 1 :flex 1}}
+       ;:margin-top 64
+       [ui/scroll-view {:style {:flex 1}
+                        #_(:refresh-control
+                            (r/as-element
+                              (let)
+                              [refresher-state (r/atom false)]
+                              [ui/refresh-control
+                               {:refreashing @refresher-state
+                                :on-refresh  (r/set-state
+                                               refresher-state false)}]))}
+        #_(map
+            (fn [message]
+              ^{:key (str "contact-" (key message))}
+              [message-list-item {:contact   message
+                                  :navigator navigator}])
+            @messages)
+        (map (fn [message]
+               ^{:key (key message)}
+                [ui/text (str (val message))])
+             @messages)
+        #_(.log js/console "logging messages: \n" @messages)
+        [ui/text (:message (first (get @messages "0871234567")))]]])))
+
 
 (defn message-list-comp [] (r/reactify-component message-list))
 

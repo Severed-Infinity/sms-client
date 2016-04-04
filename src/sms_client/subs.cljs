@@ -7,3 +7,9 @@
  (fn [db _]
    (reaction
     (get @db :greeting))))
+
+(register-sub
+  :get-messages
+  (fn [db _]
+    (reaction
+      (get @db :messages))))
