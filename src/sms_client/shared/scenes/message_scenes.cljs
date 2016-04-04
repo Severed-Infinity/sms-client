@@ -20,24 +20,46 @@
      [ui/view {:style {:flex 1 :margin-top 64}}
       [ui/text {:style {:font-weight "100" :color "#777"}}
        (str chat)]]
-     [ui/view {:style {:flex-direction  :column
-                       :flex-wrap       :nowrap
-                       :justify-content :flex-start}}
+     [ui/view {:style {:flex-direction   :row
+                       :flex-wrap        :nowrap
+                       :justify-content  :space-around
+                       :align-items      :flex-start
+                       :background-color "#eee"}}
       [ui/text-input {:placeholder     "Text Input"
-                      :style           {:font-size    14
-                                        :color        "#777"
-                                        :border-color "#999"
-                                        :border-style "solid"
-                                        :border-width 1
-                                        :height       35
-                                        :padding      5}
+                      :style           {:font-size     20
+                                        :color         "#777"
+                                        :border-color  "#999"
+                                        :border-style  "solid"
+                                        :background-color
+                                                       "#fff"
+                                        :border-radius 4
+                                        :border-width  1
+                                        :height        40
+                                        :margin-left   5
+                                        :margin-right  5
+                                        :margin-top    2
+                                        :margin-bottom 2
+                                        :padding       10
+                                        :flex          1}
+                      :container-style {:padding 10}
                       :auto-capitalize :sentences
                       :keyboard-type   :default
                       :multiline       true}]
       ;TODO dispatch send to server
-      [ios-ui/button {:on-press #()
-                      :style    {}} "send"]
-      [ios-ui/keyboard-spacer]]]))
+      [ios-ui/button {:on-press        #()
+                      :style           {:font-size 20
+                                        :flex      1}
+                      :container-style {:padding       10
+                                        :height        40
+                                        :overflow      :hidden
+                                        :border-radius 4
+                                        :background-color
+                                                       "#fff"
+                                        :margin-right  5
+                                        :margin-top    2
+                                        :margin-bottom 2}}
+       "send"]]
+     [ios-ui/keyboard-spacer]]))
 
 (defn message-chat-comp [] (r/reactify-component message-chat))
 
