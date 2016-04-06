@@ -3,19 +3,25 @@
   (:require [re-frame.core :refer [register-sub]]))
 
 (register-sub
- :get-greeting
- (fn [db _]
-   (reaction
-    (get @db :greeting))))
+  :get-greeting
+  (fn [db _]
+    (reaction
+      (get @db :greeting))))
 
 (register-sub
   :get-messages
   (fn [db _]
     (reaction
-      (get @db :messages))))
+      (sort :timestamp (get @db :messages)))))
 
 (register-sub
   :chat
   (fn [db chat]
     (reaction
       (get-in @db [:messages chat]))))
+
+(register-sub
+  :phone-number
+  (fn [db _]
+    (reaction
+      (get @db :phone-number))))

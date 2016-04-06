@@ -3,23 +3,52 @@
             [sms-client.ios.ui :as ios-ui]
             [sms-client.handlers :as handler]
             [reagent.core :as r]
-            [re-frame.core :refer [subscribe]]))
+            [re-frame.core :refer [subscribe]]
+            [cljs-time.coerce :as time-c]))
 
 ;TODO if new chat is made from main add contact to list along with chat history
 ;TODO add a send/submit type button for text input
 (defn message-chat [{navigator :navigator}]
   #_(.log js/console navigator)
   #_(.log js/console (handler/send-message "0862561423" "0851263571" "hello from my app"))
-  (let [route      (js->clj (get (r/props
-                                   (r/current-component))
-                                 :route)
-                            :keywordize-keys true)
-        pass-props (:pass-props route)
-        chat       (second (:chat pass-props))]
+  (let [route        (js->clj (get (r/props
+                                     (r/current-component))
+                                   :route)
+                              :keywordize-keys true)
+        pass-props   (:pass-props route)
+        chat         (second (:chat pass-props))
+        phone-number (subscribe [:phone-number])]
     [ui/view {:style {:height 1 :flex 1}}
      [ui/view {:style {:flex 1 :margin-top 64}}
-      [ui/text {:style {:font-weight "100" :color "#777"}}
-       (str chat)]]
+      (doall
+        (map
+          (fn [message]
+            ^{:key (str (:timestamp message)
+                        (:src message))}
+            [ui/text {:style {:align-self    (if (=
+                                                   @phone-number (:src message))
+                                               :flex-end
+                                               :flex-start)
+                              :background-color
+                                             (if (=
+                                                   @phone-number (:src message))
+                                               "#66CD00"
+                                               "#ccc")
+                              :max-width     (* 8
+                                                (count
+                                                  (:message
+                                                    message)))
+                              :margin-top    8
+                              :margin-right  15
+                              :margin-left   15
+                              :padding       10
+                              :border-radius 10}}
+
+             (:message message)])
+          (sort :timestamp chat)))
+      #_[ui/text {:style {:font-weight "100" :color
+                                       "#777"}}
+         (str chat)]]
      [ui/view {:style {:flex-direction   :row
                        :flex-wrap        :nowrap
                        :justify-content  :space-around
@@ -37,8 +66,8 @@
                                         :height        40
                                         :margin-left   5
                                         :margin-right  5
-                                        :margin-top    2
-                                        :margin-bottom 2
+                                        :margin-top    5
+                                        :margin-bottom 5
                                         :padding       10
                                         :flex          1}
                       :container-style {:padding 10}
@@ -56,8 +85,8 @@
                                         :background-color
                                                        "#fff"
                                         :margin-right  5
-                                        :margin-top    2
-                                        :margin-bottom 2}}
+                                        :margin-top    5
+                                        :margin-bottom 5}}
        "send"]]
      [ios-ui/keyboard-spacer]]))
 
@@ -127,10 +156,7 @@
           ^{:key (key message)}
           [message-list-item
            {:navigator navigator
-            :chat      message}])
-        #_(.log js/console "logging messages: \n" @messages)
-        #_[ui/text (:message (first (get @messages
-                                         "0871234567")))]]])))
+            :chat      message}])]])))
 
 
 (defn message-list-comp [] (r/reactify-component message-list))
