@@ -9,7 +9,8 @@
              :phone-number      s/Str
              :greeting          s/Any
              :current-text-body s/Str
-             :temp-number       s/Str})
+             :temp-number       s/Str
+             :refresher-state   s/Bool})
 
 ;; initial state of app-db
 (def app-db {:messages #_(into (sorted-map-by :timestamp))
@@ -27,4 +28,5 @@
              :phone-number      ""
              :greeting          "hello"
              :current-text-body ""
-             :temp-number       ""})
+             :temp-number       ""
+             :refresher-state   false})

@@ -153,27 +153,28 @@
 (defn message-list [{navigator :navigator}]
   ;FIXME sort order of messages
   #_(.log js/console navigator)
-  (let [messages      (subscribe [:get-messages])
-        phone-number  (subscribe [:phone-number])]
+  (let [messages        (subscribe [:get-messages])
+        phone-number    (subscribe [:phone-number])
+        refresher-state (subscribe [:refresher-state])]
+    #_(dispatch [:retrieve-messages])
     (fn []
       [ui/view {:style {:flex 1}}
        ;:margin-top 64
-         ;TODO refresh-control to use dispatch call
-         [ui/scroll-view {:style {:flex 1}
-                          #_(:refresh-control
-                              (r/as-element)
-                              (let
-                                [refresher-state (r/atom false)]
-                                [ui/refresh-control
-                                 {:refreashing @refresher-state
-                                  :on-refresh  (r/set-state
-                                                 refresher-state false)}]))}
-          (for [message @messages]
-            ^{:key (name (key message))}
-            [message-list-item
-             {:navigator navigator
-              :chat      message}])
-          [ui/text (str @messages "\n"@phone-number)]]])))
+       ;TODO refresh-control to use dispatch call
+       [ui/scroll-view {:style {:flex 1}
+                        :refresh-control
+                               (r/as-element
+                                 [ui/refresh-control
+                                  {:refreashing @refresher-state
+                                   :on-refresh  #(dispatch
+                                                  [:retrieve-messages])}])}
+        (for [message @messages]
+          ^{:key (name (key message))}
+          [message-list-item
+           {:navigator navigator
+            :chat      message}])
+        [ui/text (str @messages "\n" @phone-number
+                      @(subscribe [:refresher-state]))]]])))
 
 
 

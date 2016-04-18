@@ -10,7 +10,7 @@
 (def root-el (r/as-element [reloader]))
 
 (figwheel/watch-and-reload
- :websocket-url "ws://10.95.230.181:3449/figwheel-ws"
+ :websocket-url "ws://172.23.23.150:3449/figwheel-ws"
  :heads-up-display false
  :jsload-callback #(swap! cnt inc))
 

@@ -41,7 +41,7 @@
                        :value          @temp-number
                        :on-change-text #(dispatch
                                          [:set-temp-number %])}]
-       [android-ui/button {:text     "login"
+       [android-ui/button {:text     "Login"
                            :raised   true
                            :on-press #(dispatch
                                        [:set-phone-number

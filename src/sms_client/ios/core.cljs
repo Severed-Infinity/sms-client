@@ -84,7 +84,7 @@
 ;TODO possible handling of app state
 (defn init []
   (dispatch-sync [:initialize-db])
-  #_(dispatch [:load-messages "hello"])
+  (dispatch [:retrieve-messages])
   (.registerComponent ui/app-registry "SmsClient" #(r/reactify-component app-root)))
 
 (comment

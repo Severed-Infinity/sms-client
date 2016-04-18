@@ -47,3 +47,9 @@
   (fn [db _]
     (reaction
       (get @db :temp-number))))
+
+(register-sub
+  :refresher-state
+  (fn [db _]
+    (reaction
+      (get @db :refresher-state))))

@@ -1,4 +1,6 @@
-(ns sms-client.utilities)
+(ns sms-client.utilities
+  (:require [cljs-time.coerce :as time-c]
+            [cognitect.transit :as transit]))
 
 (set! js/window.React (js/require "react-native"))
 
@@ -12,6 +14,12 @@
   (not (re-matches irish-mobile-num
                    phone-number)))
 
-(def comp-time
-  (fn [x y]
-    (> (:timestamp x) (:timestamp y))))
+(def reader (transit/reader :json))
+
+(defn json->cljs-message [json-message]
+  (js->clj (as-> json-message m
+                 (transit/read reader m)
+                 (dissoc m "dest")
+                 (update m "timestamp" time-c/from-string)
+                 (update m "timestamp" time-c/to-local-date-time))
+           :keywordize-keys true))
