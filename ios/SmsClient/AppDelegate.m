@@ -32,8 +32,8 @@
    */
 
 //changing localhost:8081 to macbooks ip address 172.23.23.150
-//  jsCodeLocation = [NSURL URLWithString:@"http://172.23.23.150:8081/index.ios.bundle?platform=ios&dev=true"];
-   jsCodeLocation = [NSURL URLWithString:@"http://172.23.23.150:8081/index.ios.bundle?platform=ios&dev=true"];
+//  jsCodeLocation = [NSURL URLWithString:@"http://10.95.230.181:8081/index.ios.bundle?platform=ios&dev=true"];
+   jsCodeLocation = [NSURL URLWithString:@"http://10.95.230.181:8081/index.ios.bundle?platform=ios&dev=true"];
 
   /**
    * OPTION 2
