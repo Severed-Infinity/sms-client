@@ -1,6 +1,7 @@
 (ns sms-client.utilities
-  (:require [cljs-time.coerce :as time-c]
-            [cognitect.transit :as transit]))
+  (:require [clojure.walk :as walk]
+            [cognitect.transit :as transit]
+            [cljs-time.coerce :as c-time]))
 
 (set! js/window.React (js/require "react-native"))
 
@@ -17,9 +18,15 @@
 (def reader (transit/reader :json))
 
 (defn json->cljs-message [json-message]
-  (js->clj (as-> json-message m
-                 (transit/read reader m)
-                 (dissoc m "dest")
-                 (update m "timestamp" time-c/from-string)
-                 (update m "timestamp" time-c/to-local-date-time))
-           :keywordize-keys true))
+  (walk/keywordize-keys
+    (js->clj (as-> json-message m
+                   (transit/read reader m)
+                   (dissoc m "dest")
+                   (update m "timestamp" c-time/to-local-date-time
+                           #_(get m "timestamp"))))))
+
+(defn format-response [response]
+  (walk/keywordize-keys
+    #_(get-in [response "messages"])
+    (js->clj (transit/read reader response))))
+

@@ -124,14 +124,16 @@
   (let [contact-num    (name (key chat))
         recent-message (get (first (val chat)) :message)]
     [ui/touchable-highlight
-     {:active-opacity 0.9
-      :underlay-color "#ccc"
-      :on-press       #(.push
-                        navigator
-                        (clj->js
-                          {:component  (message-chat-comp)
-                           :title      contact-num
-                           :pass-props {:chat chat}}))}
+     (if util/ios?
+       {:active-opacity 0.9
+        :underlay-color "#ccc"
+        :on-press       #(.push
+                          navigator
+                          (clj->js
+                            {:component  (message-chat-comp)
+                             :title      contact-num
+                             :pass-props {:chat chat}}))}
+       {})
      [ui/view {:style {:min-height          55
                        :flex-direction      "column"
                        :padding             10
@@ -156,18 +158,16 @@
   (let [messages        (subscribe [:get-messages])
         phone-number    (subscribe [:phone-number])
         refresher-state (subscribe [:refresher-state])]
-    #_(dispatch [:retrieve-messages])
     (fn []
       [ui/view {:style {:flex 1}}
        ;:margin-top 64
-       ;TODO refresh-control to use dispatch call
        [ui/scroll-view {:style {:flex 1}
-                        :refresh-control
-                               (r/as-element
-                                 [ui/refresh-control
-                                  {:refreashing @refresher-state
-                                   :on-refresh  #(dispatch
-                                                  [:retrieve-messages])}])}
+                        #_(:refresh-control
+                            (r/as-element
+                              [ui/refresh-control
+                               {:refreashing @refresher-state
+                                :on-refresh  #(dispatch
+                                               [:retrieve-messages])}]))}
         (for [message @messages]
           ^{:key (name (key message))}
           [message-list-item
@@ -175,8 +175,6 @@
             :chat      message}])
         [ui/text (str @messages "\n" @phone-number
                       @(subscribe [:refresher-state]))]]])))
-
-
 
 (defn message-list-comp [] (r/reactify-component message-list))
 

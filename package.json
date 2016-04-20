@@ -10,6 +10,7 @@
     "react-native-button": "^1.4.0",
     "react-native-dialogs": "0.0.10",
     "react-native-keyboard-spacer": "^0.1.6",
-    "react-native-material-design": "git+https://github.com/react-native-material-design/react-native-material-design.git"
+    "react-native-material-design": "git+https://github.com/react-native-material-design/react-native-material-design.git",
+    "react-native-store": "^0.4.1"
   }
 }

@@ -104,71 +104,61 @@
 
 (register-handler
   :new-message
+  validate-schema-mw
   (fn [db [_ dest new-message]]
     (let [formatted-message (util/json->cljs-message
                               new-message)
           chat              (subscribe [:chat dest])]
+      #_(.log js/console (str formatted-message))
       (assoc-in db [:messages dest]
                 (into [] (concat
-                           [(clojure.walk/keywordize-keys
-                              formatted-message)]
+                           [formatted-message]
                            @chat))))))
 
 (register-handler
-  :add-new-messages
-  (fn [db [_ response]]
-    (let [new-messages       (transit/read reader response)
-          formatted-messages (vec (map #(transit/read reader %) new-messages))]
-      (dispatch [:set-refresher-state false])
-      (if (not (empty? formatted-messages))
-        (do (.log js/console formatted-messages)
-          (loop [messasges formatted-messages]
-            (let [message (first messasges)]
-              (.log js/console message)
-              (dispatch [:new-chat (get message "src")])
-              #_(update-in db [:messages
-                               (keyword (get message "src"))]
-                           message))
-            (recur (rest messasges)))
-          #_(reduce #(do
-                      (dispatch [:new-chat (get % "src")])
-                      (dispatch [:new-message (keyword
-                                                (get % "src"))
-                                 %]))
-                    #_(.log js/console %)
-                    formatted-messages))))
-    (assoc db :refresher-state false)))
-
-(register-handler
-  :retrieve-messages
-  (fn [db [_]]
-    (go-loop
-      []
-      (dispatch [:set-refresher-state true])
-      (.log js/console "retrieving messages")
-      (let [phone-number (subscribe [:phone-number])]
-        (if-not (empty? @phone-number)
-          (when-let [response (:body (<! (http/get (str
-                                                     local-host
-                                                     "/user/" @phone-number
-                                                     "/messages"))))]
-            (dispatch [:add-new-messages response]))))
-      (<! (timeout 60000))
-      (recur))
-    (assoc db :refresher-state false)))
-
-(register-handler
   :send-message
+  validate-schema-mw
   (fn [db [_ src dest message]]
     (go
-      (when-let [response (:body (<! (http/post (str
-                                                  local-host "/user/" src "/message")
+      (when-let [response (:body (<! (http/post (str base-url
+                                                     "/user/" src "/message")
                                                 #_{:form-params {:src src :dest dest :message message}}
                                                 {:multipart-params {:src src :dest dest :message message}})))]
-        (dispatch [:new-message (keyword dest) response])))
+        (dispatch [:new-message (keyword dest)
+                   response])
+        #_(.log js/console response)))
     (assoc db :current-text-body "")))
 
 (register-handler
+  :add-new-messages
+  validate-schema-mw
+  (fn [db [_ response]]
+    (update db :messages conj response)))
+
+(register-handler
+  :retrieve-messages
+  validate-schema-mw
+  (fn [db [_]]
+    (dispatch [:set-refresher-state true])
+    (go-loop []
+             (.log js/console "retrieving messages")
+             (let [phone-number (subscribe [:phone-number])]
+               (if-not (empty? @phone-number)
+                 (when-let [response (:body (<! (http/get (str
+                                                            base-url
+                                                            "/user/" @phone-number
+                                                            "/messages"))))]
+                   (let [response
+                         (util/format-response response)]
+                     (dispatch [:add-new-messages response])
+                     (dispatch [:set-refresher-state false])
+                     (.log js/console (str response))))))
+             (<! (timeout 30000))
+             (recur))
+    (assoc db :refresher-state false)))
+
+(register-handler
   :set-message-body
+  validate-schema-mw
   (fn [db [_ value]]
     (assoc db :current-text-body value)))

@@ -93,6 +93,7 @@
   re-natal use-component react-native-dialogs
   re-natal use-component react-native-button
   re-natal use-component react-native-keyboard-spacer
+  re-natal use-component react-native-store
   re-natal use-figwheel
   react-native run-android
   react-native run-ios

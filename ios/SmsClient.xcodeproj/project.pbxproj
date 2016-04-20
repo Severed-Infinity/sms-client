@@ -126,6 +126,7 @@
 		146833FF1AC3E56700842450 /* React.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React.xcodeproj; path = "../node_modules/react-native/React/React.xcodeproj"; sourceTree = "<group>"; };
 		78C398B01ACF4ADC00677621 /* RCTLinking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTLinking.xcodeproj; path = "../node_modules/react-native/Libraries/LinkingIOS/RCTLinking.xcodeproj"; sourceTree = "<group>"; };
 		832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTText.xcodeproj; path = "../node_modules/react-native/Libraries/Text/RCTText.xcodeproj"; sourceTree = "<group>"; };
+		E50E82D31CC6FDED005A449D /* SmsClient.profdata */ = {isa = PBXFileReference; lastKnownFileType = file; path = SmsClient.profdata; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -291,6 +292,7 @@
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* SmsClientTests */,
 				83CBBA001A601CBA00E9B192 /* Products */,
+				E50E82D21CC6FDED005A449D /* OptimizationProfiles */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -303,6 +305,14 @@
 				00E356EE1AD99517003FC87E /* SmsClientTests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		E50E82D21CC6FDED005A449D /* OptimizationProfiles */ = {
+			isa = PBXGroup;
+			children = (
+				E50E82D31CC6FDED005A449D /* SmsClient.profdata */,
+			);
+			path = OptimizationProfiles;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -611,6 +621,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = "Brand Assets";
+				CLANG_USE_OPTIMIZATION_PROFILE = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEAD_CODE_STRIPPING = NO;
@@ -635,6 +646,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = "Brand Assets";
+				CLANG_USE_OPTIMIZATION_PROFILE = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				HEADER_SEARCH_PATHS = (

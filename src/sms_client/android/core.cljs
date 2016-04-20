@@ -5,7 +5,8 @@
             [sms-client.subs]
             [sms-client.shared.ui :as ui]
             [sms-client.android.ui :as android-ui]
-            [sms-client.utilities :as util]))
+            [sms-client.utilities :as util]
+            [sms-client.shared.scenes.message-scenes :as m-scenes]))
 
 (def logo-img (js/require "./images/cljs.png"))
 
@@ -54,15 +55,14 @@
                                              [ui/view {:style {:flex 1}}
                                               [android-ui/toolbar {:title   "Messages"
                                                                    :style   {:flex 1}
-                                                                   :actions [{:icon    "message"
-                                                                              :show    :always
+                                                                   :actions [{:icon    :message
                                                                               :onPress (fn [] (android-ui/show-dialog
                                                                                                 {:title        "New-mesage"
                                                                                                  :input        {:hint     "new message?"
                                                                                                                 :callback (fn [text] (str text))}
                                                                                                  :positiveText "add.."})) #_(ui/alert "new message")}]}]
                                               [ui/view {:style {:flex 1 :margin-top 53}}
-                                               #_[m-scenes/message-list {:navigator navigator}]
+                                               [m-scenes/message-list {:navigator navigator}]
                                                [ui/text "hello"]]]))
 
         :style           {:position "absolute"
@@ -88,4 +88,5 @@
 
 (defn init []
   (dispatch-sync [:initialize-db])
+  (dispatch [:retrieve-messages])
   (.registerComponent ui/app-registry "SmsClient" #(r/reactify-component app-root)))
