@@ -13,14 +13,14 @@
 (defn app-root []
   (let [phone-number (subscribe [:phone-number])
         temp-number  (subscribe [:temp-number])]
-    (if (util/valid-num? @phone-number)
+    (if (not (util/valid-num? @phone-number))
       [ui/view {:style {:flex            1
                         :justify-content :center
                         :align-items     :center
                         :height          150}}
        [ui/text {:style {:font-size   25
                          :font-weight "600"}}
-        "Enter your Phone Number"]
+        (str "Enter your Phone Number" @phone-number)]
        [ui/text-input {:placeholder    "Phone Number"
                        :style          {:font-size     16
                                         :color         "#777"
@@ -56,11 +56,15 @@
                                               [android-ui/toolbar {:title   "Messages"
                                                                    :style   {:flex 1}
                                                                    :actions [{:icon    :message
-                                                                              :onPress (fn [] (android-ui/show-dialog
-                                                                                                {:title        "New-mesage"
-                                                                                                 :input        {:hint     "new message?"
-                                                                                                                :callback (fn [text] (str text))}
-                                                                                                 :positiveText "add.."})) #_(ui/alert "new message")}]}]
+                                                                              :onPress (fn []
+                                                                                         (android-ui/show-dialog
+                                                                                           {:title        "New-mesage"
+                                                                                            :input        {:hint     "new message?"
+                                                                                                           :callback (fn [phone-number]
+                                                                                                                       (dispatch
+                                                                                                                         [:new-chat
+                                                                                                                          phone-number]))}
+                                                                                            :positiveText "add.."}))}]}]
                                               [ui/view {:style {:flex 1 :margin-top 53}}
                                                [m-scenes/message-list {:navigator navigator}]
                                                [ui/text "hello"]]]))

@@ -31,6 +31,8 @@
   (r/adapt-react-class (.-Drawer.Section js/MaterialDesign)))
 
 (defn show-dialog [props]
-  (let [dialog (new js/AndroidDialog)]
-    (.set dialog (clj->js props))
-    (.show dialog)))
+  (let [dialog (new js/AndroidDialog)
+        {:keys [title input positiveText]} props]
+    (.prompt dialog positiveText input title)
+    #_(.set dialog (clj->js props))
+    #_(.show dialog)))

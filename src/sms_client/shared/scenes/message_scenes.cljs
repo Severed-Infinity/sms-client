@@ -133,7 +133,13 @@
                             {:component  (message-chat-comp)
                              :title      contact-num
                              :pass-props {:chat chat}}))}
-       {})
+       {:active-opacity 0.9
+        :underlay-color "#ccc"
+        :on-press       #(.push
+                          navigator
+                          (clj->js
+                            {:route message-chat
+                             :index 2}))})
      [ui/view {:style {:min-height          55
                        :flex-direction      "column"
                        :padding             10
@@ -173,7 +179,7 @@
           [message-list-item
            {:navigator navigator
             :chat      message}])
-        [ui/text (str @messages "\n" @phone-number
+        #_[ui/text (str @messages "\n" @phone-number
                       @(subscribe [:refresher-state]))]]])))
 
 (defn message-list-comp [] (r/reactify-component message-list))

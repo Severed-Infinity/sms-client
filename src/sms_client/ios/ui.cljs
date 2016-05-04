@@ -9,10 +9,10 @@
 (def navigator (r/adapt-react-class (.-NavigatorIOS js/React)))
 (def keyboard-spacer (r/adapt-react-class js/KeyboardSpacer))
 
-(def tab-bar
-  (r/adapt-react-class (.-TabBarIOS js/React)))
-(def tab-bar-item
-  (r/adapt-react-class (.-TabBarIOS.Item js/React)))
+#_(def tab-bar
+    (r/adapt-react-class (.-TabBarIOS js/React)))
+#_(def tab-bar-item
+    (r/adapt-react-class (.-TabBarIOS.Item js/React)))
 
 (def button
     (r/adapt-react-class js/IOSButton))

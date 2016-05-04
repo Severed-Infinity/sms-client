@@ -133,6 +133,9 @@
   :add-new-messages
   validate-schema-mw
   (fn [db [_ response]]
+    ;FIXME conj to replaced with custom function that
+    ;takes the messages and updates the individual values
+    ;to avoid overwritting
     (update db :messages conj response)))
 
 (register-handler
